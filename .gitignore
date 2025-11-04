@@ -22,3 +22,15 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Vite / frontend build caches and outputs
+.vite
+dist/
+public/build/
+public/hot
+
+# npm / pnpm / yarn debug logs
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+

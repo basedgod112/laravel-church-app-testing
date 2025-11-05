@@ -51,7 +51,7 @@ class NewsController extends Controller
 
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->storeAs('images/news', uniqid() . '.' . $request->file('image')->getClientOriginalExtension(), 'public');
-            $post->image = basename($imagePath);
+            $post->image = 'images/news/' . basename($imagePath);
         }
 
         $post->save();
@@ -70,17 +70,15 @@ class NewsController extends Controller
             'title' => 'required|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'content' => 'required|string',
-            'published_at' => 'required|date',
         ]);
 
         $post = \App\Models\Post::findOrFail($id);
         $post->title = $validated['title'];
         $post->content = $validated['content'];
-        $post->published_at = $validated['published_at'];
 
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->storeAs('images/news', uniqid() . '.' . $request->file('image')->getClientOriginalExtension(), 'public');
-            $post->image = basename($imagePath);
+            $post->image = 'images/news/' . basename($imagePath);
         }
 
         $post->save();

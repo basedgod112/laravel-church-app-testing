@@ -14,7 +14,7 @@ class PostFactory extends Factory
     {
         return [
             'title' => $this->faker->sentence(),
-            'image' => 'default.jpg', // You can change this to a random image filename if needed
+            'image' => 'default-news-image.jpg',
             'content' => $this->faker->paragraphs(3, true),
             'published_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'author' => $this->faker->name(),

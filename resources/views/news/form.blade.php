@@ -20,7 +20,7 @@
         <input type="file" name="image" id="image" accept="image/*" {{ $post->exists ? '' : 'required' }}>
         @if($post->image)
             <div>
-                <img src="{{ asset('storage/images/news/' . $post->image) }}" alt="Current image" style="max-width: 150px;">
+                <img src="{{ asset('storage/' . $post->image) }}" alt="Current image" style="max-width: 150px;">
             </div>
         @endif
 

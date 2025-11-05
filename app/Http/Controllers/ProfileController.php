@@ -37,11 +37,11 @@ class ProfileController extends Controller
         if ($request->hasFile('avatar')) {
             $avatar = $request->file('avatar');
             $avatarPath = $avatar->store('avatars', 'public');
+            $user->avatar = 'avatars/' . basename($avatarPath);
             // Delete old avatar if it exists and is different from the new one
             if ($user->avatar && $user->avatar !== $avatarPath && file_exists(storage_path('app/public/' . $user->avatar))) {
                 @unlink(storage_path('app/public/' . $user->avatar));
             }
-            $user->avatar = $avatarPath;
         }
 
         // Remove avatar from $data to prevent overwriting with temp path

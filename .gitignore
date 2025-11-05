@@ -16,7 +16,7 @@
 /public/build
 /public/hot
 /public/storage
-/public/images/default.jpg
+/public/images/default-news-image.jpg
 /storage/*.key
 /storage/pail
 /vendor

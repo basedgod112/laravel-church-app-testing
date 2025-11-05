@@ -12,7 +12,7 @@
     <main>
         <h1>@yield('title')</h1>
 
-{{--        Add more sections--}}
+        @yield('content')
 
         {{ $slot ?? null }}
     </main>

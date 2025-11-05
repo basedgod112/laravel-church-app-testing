@@ -1,5 +1,6 @@
 <?php
 
+use \App\Http\Controllers;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -10,8 +11,9 @@ Route::get('/', function () {
 // Navbar Links - Accessible to everyone
 Route::view('/home', 'home')->name('home');
 Route::view('/bible', 'bible')->name('bible');
-Route::view('/sermons', 'sermons')->name('sermons');
+Route::get('/news', [Controllers\NewsController::class, 'index'])->name('news');
 Route::view('/resources', 'resources')->name('resources');
+Route::view('/faq', 'faq')->name('faq');
 Route::view('/contact', 'contact')->name('contact');
 
 Route::middleware('auth')->group(function () {

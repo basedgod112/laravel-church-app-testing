@@ -3,7 +3,7 @@
         <li><a href="{{ route('home') }}">Home</a></li>
         <li><a href="{{ route('bible') }}">Bible</a></li>
         <li><a href="{{ route('news.index') }}">News</a></li>
-        <li><a href="{{ route('resources') }}">Resources</a></li>
+        <li><a href="{{ route('resources.index') }}">Resources</a></li>
         <li><a href="{{ route('faq') }}">FAQ</a></li>
         <li><a href="{{ route('contact') }}">Contact</a></li>
     </ul>

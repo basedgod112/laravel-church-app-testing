@@ -2,6 +2,7 @@
 
 use \App\Http\Controllers;
 use \App\Http\Controllers\NewsController;
+use \App\Http\Controllers\ResourcesController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -9,7 +10,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Navbar Links - Accessible to everyone
+// Navbar
 Route::view('/home', 'home')->name('home');
 Route::view('/bible', 'bible')->name('bible');
 Route::prefix('news')->group(function () {
@@ -20,10 +21,18 @@ Route::prefix('news')->group(function () {
     Route::put('/{id}', [NewsController::class, 'update'])->name('news.update');
     Route::delete('/{id}', [NewsController::class, 'destroy'])->name('news.destroy');
 });
-Route::view('/resources', 'resources')->name('resources');
+Route::prefix('resources')->group(function () {
+    Route::get('/', [ResourcesController::class, 'index'])->name('resources.index');
+    Route::get('/create', [ResourcesController::class, 'create'])->name('resources.create');
+    Route::post('/', [ResourcesController::class, 'store'])->name('resources.store');
+    Route::get('/{id}/edit', [ResourcesController::class, 'edit'])->name('resources.edit');
+    Route::put('/{id}', [ResourcesController::class, 'update'])->name('resources.update');
+    Route::delete('/{id}', [ResourcesController::class, 'destroy'])->name('resources.destroy');
+});
 Route::view('/faq', 'faq')->name('faq');
 Route::view('/contact', 'contact')->name('contact');
 
+// Profile
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

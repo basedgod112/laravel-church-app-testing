@@ -7,7 +7,7 @@
 @endsection
 
 @section('content')
-    @foreach($newsPosts as $post)
+    @foreach($posts as $post)
         <article>
             <h2>{{ $post->title }}</h2>
             <img src="{{ Str::startsWith($post->image, 'default-news-image') ? asset('images/' . $post->image) : asset('storage/' . $post->image) }}" alt="img">

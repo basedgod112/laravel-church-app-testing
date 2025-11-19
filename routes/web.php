@@ -4,15 +4,20 @@ use \App\Http\Controllers;
 use \App\Http\Controllers\NewsController;
 use \App\Http\Controllers\ResourcesController;
 use App\Http\Controllers\ProfileController;
+use \App\Http\Controllers\FaqController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Navbar
+// Home
 Route::view('/home', 'home')->name('home');
+
+// Bible
 Route::view('/bible', 'bible')->name('bible');
+
+// News
 Route::prefix('news')->group(function () {
     Route::get('/', [NewsController::class, 'index'])->name('news.index');
     Route::get('/create', [NewsController::class, 'create'])->name('news.create');
@@ -21,6 +26,8 @@ Route::prefix('news')->group(function () {
     Route::put('/{id}', [NewsController::class, 'update'])->name('news.update');
     Route::delete('/{id}', [NewsController::class, 'destroy'])->name('news.destroy');
 });
+
+// Resources
 Route::prefix('resources')->group(function () {
     Route::get('/', [ResourcesController::class, 'index'])->name('resources.index');
     Route::get('/create', [ResourcesController::class, 'create'])->name('resources.create');
@@ -29,7 +36,33 @@ Route::prefix('resources')->group(function () {
     Route::put('/{id}', [ResourcesController::class, 'update'])->name('resources.update');
     Route::delete('/{id}', [ResourcesController::class, 'destroy'])->name('resources.destroy');
 });
-Route::view('/faq', 'faq')->name('faq');
+
+// FAQ public index
+Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
+
+// FAQ admin routes
+// Protect admin actions with `auth` and the EnsureAdmin middleware so guests and non-admins are blocked early
+Route::prefix('faq')->middleware(['auth', \App\Http\Middleware\EnsureAdmin::class])->group(function () {
+    // admin listings
+    Route::get('/categories', [FaqController::class, 'categories'])->name('faq.categories.index');
+    Route::get('/faqs', [FaqController::class, 'faqs'])->name('faq.faqs.index');
+
+    // categories
+    Route::get('/categories/create', [FaqController::class, 'createCategory'])->name('faq.categories.create');
+    Route::post('/categories', [FaqController::class, 'storeCategory'])->name('faq.categories.store');
+    Route::get('/categories/{id}/edit', [FaqController::class, 'editCategory'])->name('faq.categories.edit');
+    Route::put('/categories/{id}', [FaqController::class, 'updateCategory'])->name('faq.categories.update');
+    Route::delete('/categories/{id}', [FaqController::class, 'destroyCategory'])->name('faq.categories.destroy');
+
+    // faqs
+    Route::get('/faqs/create', [FaqController::class, 'createFaq'])->name('faq.faqs.create');
+    Route::post('/faqs', [FaqController::class, 'storeFaq'])->name('faq.faqs.store');
+    Route::get('/faqs/{id}/edit', [FaqController::class, 'editFaq'])->name('faq.faqs.edit');
+    Route::put('/faqs/{id}', [FaqController::class, 'updateFaq'])->name('faq.faqs.update');
+    Route::delete('/faqs/{id}', [FaqController::class, 'destroyFaq'])->name('faq.faqs.destroy');
+});
+
+// Contact
 Route::view('/contact', 'contact')->name('contact');
 
 // Profile

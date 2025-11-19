@@ -4,7 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Post;
 use App\Models\User;
-use Database\Factories\PostFactory;
+use \App\Models\FaqCategory;
+use \App\Models\Faq;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -41,5 +42,12 @@ class DatabaseSeeder extends Seeder
 
         // Posts (news and articles)
         Post::factory()->count(10)->create();
+
+        // FAQ
+        FaqCategory::factory()->count(4)->create()->each(function ($category) {
+            Faq::factory()->create([
+                'faq_category_id' => $category->id,
+            ]);
+        });
     }
 }

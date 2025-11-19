@@ -23,13 +23,13 @@ class PostController extends Controller
         if (!Auth::user()->isAdmin()) {
             abort(403);
         }
-        return view($this->type . '.form', ['post' => new Post()]);
+        return view($this->type . '.admin.form', ['post' => new Post()]);
     }
 
     public function edit($id): Factory|View
     {
         $post = Post::findOrFail($id);
-        return view($this->type . '.form', compact('post'));
+        return view($this->type . '.admin.form', compact('post'));
     }
 
     /**
@@ -75,6 +75,11 @@ class PostController extends Controller
             $imagePath = $request->file('image')->storeAs('images/' . $this->type, uniqid() . '.' . $request->file('image')->getClientOriginalExtension(), 'public');
             // store path relative to storage/app/public so asset('storage/' . $post->image) works
             $post->image = 'images/' . $this->type . '/' . basename($imagePath);
+        } else {
+            // If this is a resources post and no image was uploaded, use the factory/default image value
+            if ($this->type === 'resources') {
+                $post->image = 'default-news-image.jpg';
+            }
         }
 
         $post->save();

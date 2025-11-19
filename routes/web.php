@@ -6,6 +6,7 @@ use \App\Http\Controllers\ResourcesController;
 use App\Http\Controllers\ProfileController;
 use \App\Http\Controllers\FaqController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\EnsureAdmin;
 
 Route::get('/', function () {
     return view('welcome');
@@ -41,19 +42,15 @@ Route::prefix('resources')->group(function () {
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 
 // FAQ admin routes
-// Protect admin actions with `auth` and the EnsureAdmin middleware so guests and non-admins are blocked early
-Route::prefix('faq')->middleware(['auth', \App\Http\Middleware\EnsureAdmin::class])->group(function () {
-    // admin listings
+Route::prefix('faq')->middleware(['auth', EnsureAdmin::class])->group(function () {
     Route::get('/categories', [FaqController::class, 'categories'])->name('faq.categories.index');
     Route::get('/faqs', [FaqController::class, 'faqs'])->name('faq.faqs.index');
-
     // categories
     Route::get('/categories/create', [FaqController::class, 'createCategory'])->name('faq.categories.create');
     Route::post('/categories', [FaqController::class, 'storeCategory'])->name('faq.categories.store');
     Route::get('/categories/{id}/edit', [FaqController::class, 'editCategory'])->name('faq.categories.edit');
     Route::put('/categories/{id}', [FaqController::class, 'updateCategory'])->name('faq.categories.update');
     Route::delete('/categories/{id}', [FaqController::class, 'destroyCategory'])->name('faq.categories.destroy');
-
     // faqs
     Route::get('/faqs/create', [FaqController::class, 'createFaq'])->name('faq.faqs.create');
     Route::post('/faqs', [FaqController::class, 'storeFaq'])->name('faq.faqs.store');

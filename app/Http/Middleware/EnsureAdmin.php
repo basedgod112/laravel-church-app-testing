@@ -5,31 +5,28 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class EnsureAdmin
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param Request $request
+     * @param Closure $next
      * @return mixed
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next): mixed
     {
-        // If not authenticated, redirect to login (auth middleware should normally run first)
+        // If not authenticated, redirect to login
         if (! Auth::check()) {
             return redirect()->route('login');
         }
 
-        $user = Auth::user();
-        // Accept either boolean `is_admin` column or an isAdmin() method on the User model
-        $isAdmin = false;
-        if (method_exists($user, 'isAdmin')) {
-            $isAdmin = (bool) $user->isAdmin();
-        } else {
-            $isAdmin = (bool) ($user->is_admin ?? false);
-        }
+        // Admin check
+        $isAdmin = (bool) DB::table('users')
+            ->where('id', Auth::id())
+            ->value('is_admin');
 
         if (! $isAdmin) {
             abort(403);
@@ -38,4 +35,3 @@ class EnsureAdmin
         return $next($request);
     }
 }
-

@@ -20,7 +20,6 @@ class PostController extends Controller
 
     public function create(): Factory|View
     {
-        $this->isAdminOrAbort();
         return view($this->type . '.admin.form', ['post' => new Post()]);
     }
 
@@ -55,7 +54,6 @@ class PostController extends Controller
 
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $this->isAdminOrAbort();
         $validated = $request->validate($this->rules($request, false));
 
         $post = new Post();
@@ -82,7 +80,6 @@ class PostController extends Controller
 
     public function update(Request $request, $id): \Illuminate\Http\RedirectResponse
     {
-        $this->isAdminOrAbort();
         $validated = $request->validate($this->rules($request, true));
         $post = Post::findOrFail($id);
         $post->title = $validated['title'];
@@ -100,14 +97,8 @@ class PostController extends Controller
 
     public function destroy($id): \Illuminate\Http\RedirectResponse
     {
-        $this->isAdminOrAbort();
         $post = Post::findOrFail($id);
         $post->delete();
         return redirect()->route($this->type . '.index')->with('success', ucfirst($this->type) . ' post deleted successfully.');
-    }
-
-    protected function isAdminOrAbort(): void
-    {
-        \App\Helpers\isAdminOrAbort();
     }
 }

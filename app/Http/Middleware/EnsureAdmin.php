@@ -19,7 +19,7 @@ class EnsureAdmin
     public function handle(Request $request, Closure $next): mixed
     {
         // If not authenticated, redirect to login
-        if (! Auth::check()) {
+        if (!Auth::check()) {
             return redirect()->route('login');
         }
 
@@ -28,7 +28,7 @@ class EnsureAdmin
             ->where('id', Auth::id())
             ->value('is_admin');
 
-        if (! $isAdmin) {
+        if (!$isAdmin) {
             abort(403);
         }
 

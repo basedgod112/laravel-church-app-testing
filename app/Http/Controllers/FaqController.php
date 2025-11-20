@@ -20,20 +20,17 @@ class FaqController extends Controller
     // Admin: category CRUD
     public function categories(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        $this->isAdminOrAbort();
         $categories = FaqCategory::orderBy('name')->get();
         return view('faq.admin.categories', compact('categories'));
     }
 
     public function createCategory(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        $this->isAdminOrAbort();
         return view('faq.admin.category-form', ['category' => new FaqCategory()]);
     }
 
     public function storeCategory(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $this->isAdminOrAbort();
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -44,14 +41,12 @@ class FaqController extends Controller
 
     public function editCategory($id): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        $this->isAdminOrAbort();
         $category = FaqCategory::findOrFail($id);
         return view('faq.admin.category-form', compact('category'));
     }
 
     public function updateCategory(Request $request, $id): \Illuminate\Http\RedirectResponse
     {
-        $this->isAdminOrAbort();
         $category = FaqCategory::findOrFail($id);
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -63,7 +58,6 @@ class FaqController extends Controller
 
     public function destroyCategory($id): \Illuminate\Http\RedirectResponse
     {
-        $this->isAdminOrAbort();
         $category = FaqCategory::findOrFail($id);
         $category->delete();
         return Redirect::route('faq.categories.index')->with('success', 'Category deleted');
@@ -72,21 +66,18 @@ class FaqController extends Controller
     // Admin: faq CRUD
     public function faqs(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        $this->isAdminOrAbort();
         $faqs = Faq::with('category')->orderBy('faq_category_id')->get();
         return view('faq.admin.faqs', compact('faqs'));
     }
 
     public function createFaq(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        $this->isAdminOrAbort();
         $categories = FaqCategory::orderBy('name')->get();
         return view('faq.admin.faq-form', ['faq' => new Faq(), 'categories' => $categories]);
     }
 
     public function storeFaq(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $this->isAdminOrAbort();
         $data = $request->validate([
             'faq_category_id' => 'required|exists:faq_categories,id',
             'question' => 'required|string|max:255',
@@ -98,7 +89,6 @@ class FaqController extends Controller
 
     public function editFaq($id): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        $this->isAdminOrAbort();
         $faq = Faq::findOrFail($id);
         $categories = FaqCategory::orderBy('name')->get();
         return view('faq.admin.faq-form', compact('faq', 'categories'));
@@ -106,7 +96,6 @@ class FaqController extends Controller
 
     public function updateFaq(Request $request, $id): \Illuminate\Http\RedirectResponse
     {
-        $this->isAdminOrAbort();
         $faq = Faq::findOrFail($id);
         $data = $request->validate([
             'faq_category_id' => 'required|exists:faq_categories,id',
@@ -119,14 +108,8 @@ class FaqController extends Controller
 
     public function destroyFaq($id): \Illuminate\Http\RedirectResponse
     {
-        $this->isAdminOrAbort();
         $faq = Faq::findOrFail($id);
         $faq->delete();
         return Redirect::route('faq.faqs.index')->with('success', 'FAQ deleted');
-    }
-
-    protected function isAdminOrAbort(): void
-    {
-        \App\Helpers\isAdminOrAbort();
     }
 }

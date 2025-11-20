@@ -3,7 +3,7 @@
 @section('title', 'FAQ')
 
 @section('content')
-    @if(Auth::check() && Auth::user()->isAdmin())
+    @if(\App\Helpers\isAdmin())
         <div>
             <a href="{{ route('faq.categories.create') }}">Create category</a>
             <a href="{{ route('faq.categories.index') }}">Manage categories</a>

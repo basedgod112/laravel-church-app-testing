@@ -18,9 +18,11 @@ Route::view('/home', 'home')->name('home');
 // Bible
 Route::view('/bible', 'bible')->name('bible');
 
-// News
-Route::prefix('news')->group(function () {
-    Route::get('/', [NewsController::class, 'index'])->name('news.index');
+// News public index
+Route::get('/news', [NewsController::class, 'index'])->name('news.index');
+
+// News admin
+Route::prefix('news')->middleware(['auth', EnsureAdmin::class])->group(function () {
     Route::get('/create', [NewsController::class, 'create'])->name('news.create');
     Route::post('/', [NewsController::class, 'store'])->name('news.store');
     Route::get('/{id}/edit', [NewsController::class, 'edit'])->name('news.edit');
@@ -28,9 +30,11 @@ Route::prefix('news')->group(function () {
     Route::delete('/{id}', [NewsController::class, 'destroy'])->name('news.destroy');
 });
 
-// Resources
-Route::prefix('resources')->group(function () {
-    Route::get('/', [ResourcesController::class, 'index'])->name('resources.index');
+// Resources public index
+Route::get('/resources', [ResourcesController::class, 'index'])->name('resources.index');
+
+// Resources admin
+Route::prefix('resources')->middleware(['auth', EnsureAdmin::class])->group(function () {
     Route::get('/create', [ResourcesController::class, 'create'])->name('resources.create');
     Route::post('/', [ResourcesController::class, 'store'])->name('resources.store');
     Route::get('/{id}/edit', [ResourcesController::class, 'edit'])->name('resources.edit');
@@ -41,7 +45,7 @@ Route::prefix('resources')->group(function () {
 // FAQ public index
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 
-// FAQ admin routes
+// FAQ admin
 Route::prefix('faq')->middleware(['auth', EnsureAdmin::class])->group(function () {
     Route::get('/categories', [FaqController::class, 'categories'])->name('faq.categories.index');
     Route::get('/faqs', [FaqController::class, 'faqs'])->name('faq.faqs.index');

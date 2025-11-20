@@ -12,3 +12,12 @@ if (!function_exists('isAdmin')) //helper files can be loaded multiple times
     }
 }
 
+if (!function_exists('isAdminOrAbort'))
+{
+    function isAdminOrAbort(): void
+    {
+        if (isAdmin()) {
+            abort(403);
+        }
+    }
+}

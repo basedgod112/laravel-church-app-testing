@@ -20,9 +20,7 @@ class PostController extends Controller
 
     public function create(): Factory|View
     {
-        if (!Auth::user()->isAdmin()) {
-            abort(403);
-        }
+        $this->isAdminOrAbort();
         return view($this->type . '.admin.form', ['post' => new Post()]);
     }
 
@@ -47,21 +45,17 @@ class PostController extends Controller
         // image required for news on create, optional (nullable) on update and for resources
         $imageRulePrefix = ($this->type === 'news' && !$isUpdate) ? 'required' : 'nullable';
 
-        $rules = [
+        return [
             'title' => 'required|string|max:255',
             'author' => $authorRule,
             'content' => 'required|string',
             'image' => $imageRulePrefix . '|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ];
-
-        return $rules;
     }
 
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
-        if (!Auth::user()->isAdmin()) {
-            abort(403);
-        }
+        $this->isAdminOrAbort();
         $validated = $request->validate($this->rules($request, false));
 
         $post = new Post();
@@ -88,9 +82,7 @@ class PostController extends Controller
 
     public function update(Request $request, $id): \Illuminate\Http\RedirectResponse
     {
-        if (!Auth::user()->isAdmin()) {
-            abort(403);
-        }
+        $this->isAdminOrAbort();
         $validated = $request->validate($this->rules($request, true));
         $post = Post::findOrFail($id);
         $post->title = $validated['title'];
@@ -108,11 +100,14 @@ class PostController extends Controller
 
     public function destroy($id): \Illuminate\Http\RedirectResponse
     {
-        if (!Auth::user()->isAdmin()) {
-            abort(403);
-        }
+        $this->isAdminOrAbort();
         $post = Post::findOrFail($id);
         $post->delete();
         return redirect()->route($this->type . '.index')->with('success', ucfirst($this->type) . ' post deleted successfully.');
+    }
+
+    protected function isAdminOrAbort(): void
+    {
+        \App\Helpers\isAdminOrAbort();
     }
 }

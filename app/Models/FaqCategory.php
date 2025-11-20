@@ -8,6 +8,9 @@ use App\Models\Faq;
 
 /**
  * @method static firstOrCreate(string[] $array)
+ * @method static create(array $data)
+ * @method static findOrFail($id)
+ * @method static orderBy(string $string)
  */
 class FaqCategory extends Model
 {

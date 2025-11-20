@@ -11,29 +11,29 @@ use App\Models\FaqCategory;
 class FaqController extends Controller
 {
     // Public listing grouped by category
-    public function index()
+    public function index(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
         $categories = FaqCategory::with('faqs')->orderBy('name')->get();
         return view('faq.index', compact('categories'));
     }
 
     // Admin: category CRUD
-    public function categories()
+    public function categories(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        $this->authorizeAdmin();
+        $this->isAdminOrAbort();
         $categories = FaqCategory::orderBy('name')->get();
         return view('faq.admin.categories', compact('categories'));
     }
 
-    public function createCategory()
+    public function createCategory(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        $this->authorizeAdmin();
+        $this->isAdminOrAbort();
         return view('faq.admin.category-form', ['category' => new FaqCategory()]);
     }
 
-    public function storeCategory(Request $request)
+    public function storeCategory(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $this->authorizeAdmin();
+        $this->isAdminOrAbort();
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -42,16 +42,16 @@ class FaqController extends Controller
         return Redirect::route('faq.categories.index')->with('success', 'Category created');
     }
 
-    public function editCategory($id)
+    public function editCategory($id): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        $this->authorizeAdmin();
+        $this->isAdminOrAbort();
         $category = FaqCategory::findOrFail($id);
         return view('faq.admin.category-form', compact('category'));
     }
 
-    public function updateCategory(Request $request, $id)
+    public function updateCategory(Request $request, $id): \Illuminate\Http\RedirectResponse
     {
-        $this->authorizeAdmin();
+        $this->isAdminOrAbort();
         $category = FaqCategory::findOrFail($id);
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -61,32 +61,32 @@ class FaqController extends Controller
         return Redirect::route('faq.categories.index')->with('success', 'Category updated');
     }
 
-    public function destroyCategory($id)
+    public function destroyCategory($id): \Illuminate\Http\RedirectResponse
     {
-        $this->authorizeAdmin();
+        $this->isAdminOrAbort();
         $category = FaqCategory::findOrFail($id);
         $category->delete();
         return Redirect::route('faq.categories.index')->with('success', 'Category deleted');
     }
 
     // Admin: faq CRUD
-    public function faqs()
+    public function faqs(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        $this->authorizeAdmin();
+        $this->isAdminOrAbort();
         $faqs = Faq::with('category')->orderBy('faq_category_id')->get();
         return view('faq.admin.faqs', compact('faqs'));
     }
 
-    public function createFaq()
+    public function createFaq(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        $this->authorizeAdmin();
+        $this->isAdminOrAbort();
         $categories = FaqCategory::orderBy('name')->get();
         return view('faq.admin.faq-form', ['faq' => new Faq(), 'categories' => $categories]);
     }
 
-    public function storeFaq(Request $request)
+    public function storeFaq(Request $request): \Illuminate\Http\RedirectResponse
     {
-        $this->authorizeAdmin();
+        $this->isAdminOrAbort();
         $data = $request->validate([
             'faq_category_id' => 'required|exists:faq_categories,id',
             'question' => 'required|string|max:255',
@@ -96,17 +96,17 @@ class FaqController extends Controller
         return Redirect::route('faq.faqs.index')->with('success', 'FAQ created');
     }
 
-    public function editFaq($id)
+    public function editFaq($id): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        $this->authorizeAdmin();
+        $this->isAdminOrAbort();
         $faq = Faq::findOrFail($id);
         $categories = FaqCategory::orderBy('name')->get();
         return view('faq.admin.faq-form', compact('faq', 'categories'));
     }
 
-    public function updateFaq(Request $request, $id)
+    public function updateFaq(Request $request, $id): \Illuminate\Http\RedirectResponse
     {
-        $this->authorizeAdmin();
+        $this->isAdminOrAbort();
         $faq = Faq::findOrFail($id);
         $data = $request->validate([
             'faq_category_id' => 'required|exists:faq_categories,id',
@@ -117,18 +117,16 @@ class FaqController extends Controller
         return Redirect::route('faq.faqs.index')->with('success', 'FAQ updated');
     }
 
-    public function destroyFaq($id)
+    public function destroyFaq($id): \Illuminate\Http\RedirectResponse
     {
-        $this->authorizeAdmin();
+        $this->isAdminOrAbort();
         $faq = Faq::findOrFail($id);
         $faq->delete();
         return Redirect::route('faq.faqs.index')->with('success', 'FAQ deleted');
     }
 
-    protected function authorizeAdmin()
+    protected function isAdminOrAbort(): void
     {
-        if (!Auth::check() || !Auth::user()->isAdmin()) {
-            abort(403);
-        }
+        \App\Helpers\isAdminOrAbort();
     }
 }

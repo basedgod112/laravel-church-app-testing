@@ -12,9 +12,9 @@
     <main>
         <h1>@yield('title')</h1>
 
-        @if(\App\Helpers\isAdmin())
-            @yield('admin')
-        @endif
+        @can('admin')
+            @yield('admin-header')
+        @endcan
 
         @yield('content')
 

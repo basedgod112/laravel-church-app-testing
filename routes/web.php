@@ -1,6 +1,5 @@
 <?php
 
-use \App\Http\Controllers;
 use \App\Http\Controllers\NewsController;
 use \App\Http\Controllers\ResourcesController;
 use App\Http\Controllers\ProfileController;
@@ -8,6 +7,9 @@ use \App\Http\Controllers\FaqController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ProgramController;
+
+require __DIR__.'/auth.php';
 
 Route::get('/', function () {
     return view('welcome');
@@ -19,13 +21,24 @@ Route::view('/home', 'home')->name('home');
 // Bible
 Route::view('/bible', 'bible')->name('bible');
 
-// Program
-Route::view('/program', 'program')->name('program');
+// Program - public index
+Route::get('/program', [ProgramController::class, 'index'])->name('program.index');
 
-// News public index
+// Program - admin
+Route::prefix('program')->middleware(['auth', EnsureAdmin::class])->group(function () {
+    Route::get('/manage', [ProgramController::class, 'manage'])->name('program.manage');
+    Route::get('/create', [ProgramController::class, 'create'])->name('program.create');
+    Route::post('/', [ProgramController::class, 'store'])->name('program.store');
+    Route::get('/{id}/edit', [ProgramController::class, 'edit'])->name('program.edit');
+    Route::put('/{id}', [ProgramController::class, 'update'])->name('program.update');
+    Route::delete('/{id}', [ProgramController::class, 'destroy'])->name('program.destroy');
+});
+
+
+// News - public index
 Route::get('/news', [NewsController::class, 'index'])->name('news.index');
 
-// News admin
+// News - admin
 Route::prefix('news')->middleware(['auth', EnsureAdmin::class])->group(function () {
     Route::get('/create', [NewsController::class, 'create'])->name('news.create');
     Route::post('/', [NewsController::class, 'store'])->name('news.store');
@@ -34,10 +47,10 @@ Route::prefix('news')->middleware(['auth', EnsureAdmin::class])->group(function 
     Route::delete('/{id}', [NewsController::class, 'destroy'])->name('news.destroy');
 });
 
-// Resources public index
+// Resources - public index
 Route::get('/resources', [ResourcesController::class, 'index'])->name('resources.index');
 
-// Resources admin
+// Resources - admin
 Route::prefix('resources')->middleware(['auth', EnsureAdmin::class])->group(function () {
     Route::get('/create', [ResourcesController::class, 'create'])->name('resources.create');
     Route::post('/', [ResourcesController::class, 'store'])->name('resources.store');
@@ -46,10 +59,10 @@ Route::prefix('resources')->middleware(['auth', EnsureAdmin::class])->group(func
     Route::delete('/{id}', [ResourcesController::class, 'destroy'])->name('resources.destroy');
 });
 
-// FAQ public index
+// FAQ - public index
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 
-// FAQ admin
+// FAQ - admin
 Route::prefix('faq')->middleware(['auth', EnsureAdmin::class])->group(function () {
     Route::get('/categories', [FaqController::class, 'categories'])->name('faq.categories.index');
     Route::get('/faqs', [FaqController::class, 'faqs'])->name('faq.faqs.index');
@@ -77,5 +90,3 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-
-require __DIR__.'/auth.php';

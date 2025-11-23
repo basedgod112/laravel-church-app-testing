@@ -2,7 +2,7 @@
 
 @section('title', 'Resources')
 
-@section('admin')
+@section('admin-header')
     <a href="{{ route('resources.create') }}">Add Resource</a>
 @endsection
 
@@ -15,14 +15,14 @@
             <p>{{ $post->content }}</p>
             <p>Published on {{ $post->published_at }}</p>
 
-            @if(\App\Helpers\isAdmin())
+            @can('admin')
                 <a href="{{ route('resources.edit', $post->id) }}">Edit</a>
                 <form action="{{ route('resources.destroy', $post->id) }}" method="POST" style="display:inline;">
                     @csrf
                     @method('DELETE')
                     <button type="submit">Delete</button>
                 </form>
-            @endif
+            @endcan
 
         </article>
     @endforeach

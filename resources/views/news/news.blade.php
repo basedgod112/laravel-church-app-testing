@@ -2,7 +2,7 @@
 
 @section('title', 'News')
 
-@section('admin')
+@section('admin-header')
     <a href="{{ route('news.create') }}">Add News Post</a>
 @endsection
 
@@ -14,14 +14,14 @@
             <p>{{ $post->content }}</p>
             <p>Published on {{ $post->published_at }}</p>
 
-            @if(\App\Helpers\isAdmin())
+            @can('admin')
                 <a href="{{ route('news.edit', $post->id) }}">Edit</a>
                 <form action="{{ route('news.destroy', $post->id) }}" method="POST" style="display:inline;">
                     @csrf
                     @method('DELETE')
                     <button type="submit">Delete</button>
                 </form>
-            @endif
+            @endcan
 
         </article>
     @endforeach

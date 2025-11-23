@@ -3,14 +3,14 @@
 @section('title', 'FAQ')
 
 @section('content')
-    @if(\App\Helpers\isAdmin())
+     @can('admin')
         <div>
             <a href="{{ route('faq.categories.create') }}">Create category</a>
             <a href="{{ route('faq.categories.index') }}">Manage categories</a>
             <a href="{{ route('faq.faqs.create') }}">Create FAQ</a>
             <a href="{{ route('faq.faqs.index') }}">Manage FAQs</a>
         </div>
-    @endif
+    @endcan
 
     @foreach($categories as $category)
         <section>

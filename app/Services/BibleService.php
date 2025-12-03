@@ -6,6 +6,8 @@ class BibleService
 {
     /**
      * Canonical Protestant Bible order.
+     * Single source of truth for ordering.
+     *
      * @return string[]
      */
     public static function canonical(): array
@@ -31,7 +33,7 @@ class BibleService
      */
     public static function buildIndexFromFolder(string $translation): array
     {
-        $dir = storage_path("app/bible/{$translation}");
+        $dir = storage_path("app/bible/$translation");
         if (!is_dir($dir)) {
             return [];
         }
@@ -40,7 +42,7 @@ class BibleService
         $books = [];
         foreach ($files as $f) {
             if (!is_file($dir . DIRECTORY_SEPARATOR . $f)) continue;
-            if (substr($f, -5) !== '.json') continue;
+            if (!str_ends_with($f, '.json')) continue;
             $name = substr($f, 0, -5);
             $parts = explode('_', $name);
             if (count($parts) < 2) continue;
@@ -63,5 +65,59 @@ class BibleService
 
         return $index;
     }
-}
 
+    /**
+     * Reorder an index array into canonical Bible order.
+     * Leaves non-canonical books appended alphabetically.
+     *
+     * @param array $index  Array of index items (['book'=>..., 'chapters'=>...])
+     * @return array
+     */
+    public static function reorderIndexToCanonical(array $index): array
+    {
+        // Build normalized map for quick lookup
+        $normalizedIndex = [];
+        foreach ($index as $item) {
+            $normalizedIndex[self::normalize($item['book'])] = $item;
+        }
+
+        $ordered = [];
+        $usedKeys = [];
+
+        foreach (self::canonical() as $c) {
+            $cn = self::normalize($c);
+            if (isset($normalizedIndex[$cn])) {
+                $ordered[] = $normalizedIndex[$cn];
+                $usedKeys[] = $cn;
+                continue;
+            }
+
+            $foundKey = null;
+            foreach ($normalizedIndex as $k => $v) {
+                if (in_array($k, $usedKeys, true)) continue;
+                if (str_contains($k, $cn) || str_contains($cn, $k)) {
+                    $foundKey = $k;
+                    break;
+                }
+            }
+            if ($foundKey !== null) {
+                $ordered[] = $normalizedIndex[$foundKey];
+                $usedKeys[] = $foundKey;
+            }
+        }
+
+        // Append remaining books alphabetically
+        $remaining = [];
+        foreach ($index as $item) {
+            $key = self::normalize($item['book']);
+            if (in_array($key, $usedKeys, true)) continue;
+            $remaining[] = $item;
+        }
+
+        usort($remaining, function ($a, $b) {
+            return strcasecmp($a['book'], $b['book']);
+        });
+
+        return array_merge($ordered, $remaining);
+    }
+}

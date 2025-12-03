@@ -49,47 +49,8 @@ class BibleController extends Controller
         // build index array from files (delegated to service)
         $index = BibleService::buildIndexFromFolder($translation);
 
-        // Build normalized map of index entries for quick lookup
-        $normalizedIndex = [];
-        foreach ($index as $item) {
-            $normalizedIndex[BibleService::normalize($item['book'])] = $item;
-        }
-
-        $ordered = [];
-        $usedKeys = [];
-
-        foreach (BibleService::canonical() as $c) {
-            $cn = BibleService::normalize($c);
-            if (isset($normalizedIndex[$cn])) {
-                $ordered[] = $normalizedIndex[$cn];
-                $usedKeys[] = $cn;
-                continue;
-            }
-            $foundKey = null;
-            foreach ($normalizedIndex as $k => $v) {
-                if (in_array($k, $usedKeys, true)) continue;
-                if (str_contains($k, $cn) || str_contains($cn, $k)) {
-                    $foundKey = $k;
-                    break;
-                }
-            }
-            if ($foundKey !== null) {
-                $ordered[] = $normalizedIndex[$foundKey];
-                $usedKeys[] = $foundKey;
-            }
-        }
-
-        $remaining = [];
-        foreach ($index as $item) {
-            $key = BibleService::normalize($item['book']);
-            if (in_array($key, $usedKeys, true)) continue;
-            $remaining[] = $item;
-        }
-        usort($remaining, function ($a, $b) {
-            return strcasecmp($a['book'], $b['book']);
-        });
-
-        $final = array_merge($ordered, $remaining);
+        // reorder index to canonical using the service
+        $final = BibleService::reorderIndexToCanonical($index);
 
         $headers = [
             'Cache-Control' => 'no-store, max-age=0',

@@ -3,7 +3,6 @@
 @section('title', 'Edit Program Item')
 
 @section('content')
-    <h1>Edit Program Item</h1>
     <form method="POST" action="{{ route('program.update', $program->id) }}">
         @csrf
         @method('PUT')

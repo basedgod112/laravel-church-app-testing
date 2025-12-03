@@ -49,5 +49,8 @@ class DatabaseSeeder extends Seeder
                 'faq_category_id' => $category->id,
             ]);
         });
+
+        // Programs
+        $this->call(ProgramSeeder::class);
     }
 }

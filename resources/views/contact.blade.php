@@ -4,6 +4,8 @@
 
 @section('content')
     <div class="container">
+        <p>Ask us a question or become member at our church!</p>
+
         @if(session('status'))
             <div class="alert alert-success">{{ session('status') }}</div>
         @endif

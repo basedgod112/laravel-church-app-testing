@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Program;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @method authorize(string $string)
@@ -26,10 +27,22 @@ class ProgramController extends Controller
     // Public index
     public function index(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        $programs = Program::where('published', true)
-            ->orderByRaw("FIELD(day_of_week, 'Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')")
-            ->orderBy('start_time')
-            ->get();
+        // Build a driver-aware ordering because SQLite doesn't support FIELD()
+        $programsQuery = Program::where('published', true);
+
+        if (DB::getDriverName() === 'sqlite') {
+            // SQLite: use CASE expression to define weekday order
+            $programs = $programsQuery
+                ->orderByRaw("CASE day_of_week WHEN 'Sunday' THEN 1 WHEN 'Monday' THEN 2 WHEN 'Tuesday' THEN 3 WHEN 'Wednesday' THEN 4 WHEN 'Thursday' THEN 5 WHEN 'Friday' THEN 6 WHEN 'Saturday' THEN 7 ELSE 8 END")
+                ->orderBy('start_time')
+                ->get();
+        } else {
+            // Others: use FIELD()
+            $programs = $programsQuery
+                ->orderByRaw("FIELD(day_of_week, 'Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')")
+                ->orderBy('start_time')
+                ->get();
+        }
 
         return view('program.index', compact('programs'));
     }
@@ -37,8 +50,17 @@ class ProgramController extends Controller
     // Admin manage view
     public function manage(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
+        // Use same ordering logic for admin/manage listing
+        if (DB::getDriverName() === 'sqlite') {
+            $programs = Program::orderByRaw("CASE day_of_week WHEN 'Sunday' THEN 1 WHEN 'Monday' THEN 2 WHEN 'Tuesday' THEN 3 WHEN 'Wednesday' THEN 4 WHEN 'Thursday' THEN 5 WHEN 'Friday' THEN 6 WHEN 'Saturday' THEN 7 ELSE 8 END")
+                ->orderBy('start_time')
+                ->get();
+        } else {
+            $programs = Program::orderByRaw("FIELD(day_of_week, 'Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday')")
+                ->orderBy('start_time')
+                ->get();
+        }
 
-        $programs = Program::orderBy('day_of_week')->orderBy('start_time')->get();
         return view('program.manage', compact('programs'));
     }
 
@@ -51,7 +73,8 @@ class ProgramController extends Controller
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $data = $this->validateProgram($request);
-        $data['published'] = !$request->has('published') || $request->published;
+        // Use boolean helper so unchecked checkbox results in false
+        $data['published'] = $request->boolean('published');
         Program::create($data);
         return Redirect::route('program.manage')->with('success', 'Program item created.');
     }
@@ -66,7 +89,7 @@ class ProgramController extends Controller
     {
         $program = Program::findOrFail($id);
         $data = $this->validateProgram($request);
-        $data['published'] = !$request->has('published') || $request->published;
+        $data['published'] = $request->boolean('published');
         $program->update($data);
         return Redirect::route('program.manage')->with('success', 'Program item updated.');
     }
@@ -78,4 +101,3 @@ class ProgramController extends Controller
         return Redirect::route('program.manage')->with('success', 'Program item deleted.');
     }
 }
-

@@ -10,11 +10,10 @@ use Illuminate\Database\Eloquent\Model;
  * @method static orderBy(string $string)
  * @method static create(array $data)
  * @method static findOrFail($id)
+ * @method static orderByRaw(string $string)
  */
 class Program extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
         'title',
         'description',

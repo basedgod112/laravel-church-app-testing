@@ -20,6 +20,7 @@
 </div>
 <div>
     <label>Published</label>
-    <input type="checkbox" name="published" value="1" {{ old('published', $program->published ?? true) ? 'checked' : '' }}>
+    <!-- hidden field ensures a value is always submitted when checkbox is unchecked -->
+    <input type="hidden" name="published" value="0">
+    <input type="checkbox" name="published" value="1" {{ (bool) old('published', $program->published ?? false) ? 'checked' : '' }}>
 </div>
-

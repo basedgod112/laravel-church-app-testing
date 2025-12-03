@@ -3,8 +3,6 @@
 @section('title', 'Manage Program')
 
 @section('content')
-    <h1>Manage Program</h1>
-
     <p><a href="{{ route('program.create') }}">Create new item</a></p>
 
     @if(session('success'))

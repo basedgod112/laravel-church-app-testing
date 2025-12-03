@@ -1,9 +1,9 @@
 <?php
 
-use \App\Http\Controllers\NewsController;
-use \App\Http\Controllers\ResourcesController;
+use App\Http\Controllers\NewsController;
+use App\Http\Controllers\ResourcesController;
 use App\Http\Controllers\ProfileController;
-use \App\Http\Controllers\FaqController;
+use App\Http\Controllers\FaqController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Controllers\ContactController;

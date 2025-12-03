@@ -48,8 +48,27 @@
                 return a.orig.book.localeCompare(b.orig.book, undefined, { sensitivity: 'base' });
             });
 
-            const ordered = mapped.map(m => m.orig);
-            return ordered;
+            return mapped.map(m => m.orig);
+        }
+
+        function getLastVisited() {
+            try {
+                const raw = localStorage.getItem('bible_last');
+                if (!raw) return null;
+                const parsed = JSON.parse(raw);
+                if (parsed && parsed.book && parsed.chapter) return parsed;
+            } catch (e) {
+                // ignore
+            }
+            return null;
+        }
+
+        function setLastVisited(book, chapter) {
+            try {
+                localStorage.setItem('bible_last', JSON.stringify({ book, chapter: Number(chapter) }));
+            } catch (e) {
+                // ignore
+            }
         }
 
         async function loadIndex() {
@@ -75,6 +94,38 @@
                 bookSelect.appendChild(opt);
             });
             populateChapters();
+
+            // Auto-load last visited chapter if present, otherwise Genesis 1
+            const last = getLastVisited();
+            let initialBook;
+            let initialChapter;
+            if (last) {
+                initialBook = last.book;
+                initialChapter = last.chapter;
+            } else {
+                initialBook = 'Genesis';
+                initialChapter = 1;
+            }
+
+            // If the initialBook isn't present in select, fall back to first option
+            if (![...bookSelect.options].some(o => o.value === initialBook)) {
+                initialBook = bookSelect.options[0]?.value || initialBook;
+            }
+
+            // set selection and ensure chapters updated
+            bookSelect.value = initialBook;
+            populateChapters();
+            const chapterSelect = document.getElementById('chapterSelect');
+            const chapterCount = chapterSelect.options.length ? Number(chapterSelect.options[chapterSelect.options.length - 1].value) : 0;
+
+            if (!initialChapter || initialChapter < 1 || initialChapter > chapterCount) {
+                initialChapter = 1;
+            }
+
+            chapterSelect.value = initialChapter;
+
+            // Load the selected chapter
+            await loadChapter(initialBook, initialChapter);
         }
 
         function populateChapters() {
@@ -112,6 +163,9 @@
                 p.innerHTML = `<sup>${v.verse}</sup> ${v.text}`;
                 versesDiv.appendChild(p);
             });
+
+            // remember last visited
+            setLastVisited(book, data.chapter);
         }
 
         // initial load

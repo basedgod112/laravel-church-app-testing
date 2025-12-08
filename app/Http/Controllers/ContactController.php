@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Mail\ContactFormMail;
+use App\Models\ContactMessage;
 use Throwable;
 
 class ContactController extends Controller
@@ -26,6 +27,13 @@ class ContactController extends Controller
             'message' => 'required|string',
         ]);
 
+        // persist message
+        ContactMessage::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'message' => $data['message'],
+        ]);
+
         $adminEmail = env('MAIL_ADMIN', config('mail.from.address'));
 
         try {
@@ -36,11 +44,11 @@ class ContactController extends Controller
                 $failures = Mail::failures();
                 if (!empty($failures)) {
                     Log::error('Contact mail failures', ['failures' => $failures, 'admin' => $adminEmail]);
-                    return redirect()->route('contact.index')->with('status', 'Er is een fout opgetreden bij het versturen van uw bericht.');
+                    return redirect()->route('contact.index')->with('status', 'There was an error sending your message.');
                 }
             }
 
-            return redirect()->route('contact.index')->with('status', 'Bedankt — uw bericht is verzonden.');
+            return redirect()->route('contact.index')->with('status', 'Thank you — your message has been sent.');
         } catch (Throwable $e) {
             Log::error('Contact mail exception: '.$e->getMessage(), [
                 'exception' => $e,
@@ -48,7 +56,7 @@ class ContactController extends Controller
                 'data' => $data,
             ]);
 
-            return redirect()->route('contact.index')->with('status', 'Er is een fout opgetreden bij het versturen van uw bericht.');
+            return redirect()->route('contact.index')->with('status', 'There was an error sending your message.');
         }
     }
 }

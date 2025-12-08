@@ -12,6 +12,8 @@ use App\Http\Controllers\BibleController;
 use App\Http\Controllers\FavoriteVerseController;
 use App\Http\Controllers\ConnectController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\ContactMessageController;
+use App\Models\ContactMessage;
 
 require __DIR__.'/auth.php';
 
@@ -113,17 +115,26 @@ Route::post('/contact', [ContactController::class, 'send'])->name('contact.send'
 // Admin - dashboard
 Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function () {
     Route::get('/dashboard', function () {
-        return view('admin.dashboard');
+        $messages = ContactMessage::orderBy('created_at', 'desc')->paginate(5);
+        return view('admin.dashboard', compact('messages'));
     })->name('admin.dashboard');
-});
 
-// Admin - user management
-Route::prefix('admin/users')->middleware(['auth', EnsureAdmin::class])->group(function () {
-    Route::get('/', [UserController::class, 'index'])->name('admin.users.index');
-    Route::get('/create', [UserController::class, 'create'])->name('admin.users.create');
-    Route::post('/', [UserController::class, 'store'])->name('admin.users.store');
-    Route::delete('/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
-    Route::post('/{user}/toggle-admin', [UserController::class, 'toggleAdmin'])->name('admin.users.toggleAdmin');
+    // Contact messages
+    Route::prefix('contact-messages')-> group(function () {
+        Route::get('/', [ContactMessageController::class, 'index'])->name('admin.contact.index');
+        Route::get('/{message}', [ContactMessageController::class, 'show'])->name('admin.contact.show');
+        Route::post('/{message}/reply', [ContactMessageController::class, 'reply'])->name('admin.contact.reply');
+        Route::delete('/{message}', [ContactMessageController::class, 'destroy'])->name('admin.contact.destroy');
+    });
+
+    // User management
+    Route::prefix('users')-> group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('admin.users.index');
+        Route::get('/create', [UserController::class, 'create'])->name('admin.users.create');
+        Route::post('/', [UserController::class, 'store'])->name('admin.users.store');
+        Route::delete('/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+        Route::post('/{user}/toggle-admin', [UserController::class, 'toggleAdmin'])->name('admin.users.toggleAdmin');
+    });
 });
 
 // Profile

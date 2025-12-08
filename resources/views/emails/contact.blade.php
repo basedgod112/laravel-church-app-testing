@@ -1,9 +1,9 @@
-<p>Er is een nieuw bericht via het contactformulier:</p>
+<p>There is a new message from the contact form:</p>
 
 <ul>
-    <li><strong>Naam:</strong> {{ $data['name'] }}</li>
-    <li><strong>E-mail:</strong> {{ $data['email'] }}</li>
+    <li><strong>Name:</strong> {{ $data['name'] }}</li>
+    <li><strong>Email:</strong> {{ $data['email'] }}</li>
 </ul>
 
-<p><strong>Bericht:</strong></p>
+<p><strong>Message:</strong></p>
 <p>{!! nl2br(e($data['message'])) !!}</p>

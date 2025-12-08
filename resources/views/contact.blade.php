@@ -14,24 +14,24 @@
             @csrf
 
             <div>
-                <label for="name">Naam</label>
+                <label for="name">Name</label>
                 <input id="name" name="name" value="{{ old('name') }}">
                 @error('name') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
 
             <div>
-                <label for="email">E-mail</label>
+                <label for="email">Email</label>
                 <input id="email" name="email" value="{{ old('email') }}">
                 @error('email') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
 
             <div>
-                <label for="message">Bericht</label>
+                <label for="message">Message</label>
                 <textarea id="message" name="message">{{ old('message') }}</textarea>
                 @error('message') <div class="text-danger">{{ $message }}</div> @enderror
             </div>
 
-            <button type="submit">Verstuur</button>
+            <button type="submit">Send</button>
         </form>
     </div>
 @endsection

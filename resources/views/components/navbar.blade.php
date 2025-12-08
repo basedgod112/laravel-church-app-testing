@@ -9,7 +9,7 @@
         <li><a href="{{ route('faq.index') }}">FAQ</a></li>
         <li><a href="{{ route('contact.index') }}">Contact</a></li>
         @can('admin')
-            <li><a href="{{ route('admin.users.index') }}">Manage Users</a></li>
+            <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
         @endcan
     </ul>
 

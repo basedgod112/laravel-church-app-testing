@@ -40,7 +40,7 @@ Route::middleware('auth')->group(function () {
 Route::get('/program', [ProgramController::class, 'index'])->name('program.index');
 
 // Program - admin
-Route::prefix('program')->middleware(['auth', EnsureAdmin::class])->group(function () {
+Route::prefix('admin/program')->middleware(['auth', EnsureAdmin::class])->group(function () {
     Route::get('/manage', [ProgramController::class, 'manage'])->name('program.manage');
     Route::get('/create', [ProgramController::class, 'create'])->name('program.create');
     Route::post('/', [ProgramController::class, 'store'])->name('program.store');
@@ -52,7 +52,7 @@ Route::prefix('program')->middleware(['auth', EnsureAdmin::class])->group(functi
 // Connect - public index
 Route::get('/connect', [ConnectController::class, 'index'])->name('connect.index');
 
-// Connect - actions (require auth)
+// Connect - actions
 Route::middleware('auth')->prefix('connect')->group(function () {
     Route::post('/{receiver}/request', [ConnectController::class, 'sendRequest'])->name('connect.request.send');
     Route::post('/requests/{id}/accept', [ConnectController::class, 'accept'])->name('connect.request.accept');
@@ -65,7 +65,7 @@ Route::middleware('auth')->prefix('connect')->group(function () {
 Route::get('/news', [NewsController::class, 'index'])->name('news.index');
 
 // News - admin
-Route::prefix('news')->middleware(['auth', EnsureAdmin::class])->group(function () {
+Route::prefix('admin/news')->middleware(['auth', EnsureAdmin::class])->group(function () {
     Route::get('/create', [NewsController::class, 'create'])->name('news.create');
     Route::post('/', [NewsController::class, 'store'])->name('news.store');
     Route::get('/{id}/edit', [NewsController::class, 'edit'])->name('news.edit');
@@ -77,7 +77,7 @@ Route::prefix('news')->middleware(['auth', EnsureAdmin::class])->group(function 
 Route::get('/resources', [ResourcesController::class, 'index'])->name('resources.index');
 
 // Resources - admin
-Route::prefix('resources')->middleware(['auth', EnsureAdmin::class])->group(function () {
+Route::prefix('admin/resources')->middleware(['auth', EnsureAdmin::class])->group(function () {
     Route::get('/create', [ResourcesController::class, 'create'])->name('resources.create');
     Route::post('/', [ResourcesController::class, 'store'])->name('resources.store');
     Route::get('/{id}/edit', [ResourcesController::class, 'edit'])->name('resources.edit');
@@ -89,7 +89,7 @@ Route::prefix('resources')->middleware(['auth', EnsureAdmin::class])->group(func
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 
 // FAQ - admin
-Route::prefix('faq')->middleware(['auth', EnsureAdmin::class])->group(function () {
+Route::prefix('admin/faq')->middleware(['auth', EnsureAdmin::class])->group(function () {
     Route::get('/categories', [FaqController::class, 'categories'])->name('faq.categories.index');
     Route::get('/faqs', [FaqController::class, 'faqs'])->name('faq.faqs.index');
     // categories
@@ -109,6 +109,13 @@ Route::prefix('faq')->middleware(['auth', EnsureAdmin::class])->group(function (
 // Contact
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
+
+// Admin - dashboard
+Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
+});
 
 // Admin - user management
 Route::prefix('admin/users')->middleware(['auth', EnsureAdmin::class])->group(function () {

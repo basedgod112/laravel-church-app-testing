@@ -8,13 +8,18 @@ use Illuminate\Support\Facades\Auth;
 
 class FavoriteVerseController extends Controller
 {
-    public function index(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+    public function index(Request $request): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\JsonResponse
     {
         $favorites = Auth::id() ? FavoriteVerse::where('user_id', Auth::id())->orderBy('created_at', 'desc')->get() : collect();
-        return view('favorites.index', compact('favorites'));
+
+        if ($request->expectsJson()) {
+            return response()->json($favorites);
+        }
+
+        return view('bible.favorites', compact('favorites'));
     }
 
-    public function store(Request $request): \Illuminate\Http\RedirectResponse
+    public function store(Request $request): \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
     {
         $request->validate([
             'translation' => 'required|string|max:32',
@@ -26,19 +31,30 @@ class FavoriteVerseController extends Controller
         $data = $request->only(['translation', 'book', 'chapter', 'verse']);
         $data['user_id'] = Auth::id();
 
-        FavoriteVerse::firstOrCreate($data);
+        $favorite = FavoriteVerse::firstOrCreate($data);
+
+        if ($request->expectsJson()) {
+            return response()->json(['favorite' => $favorite], 201);
+        }
 
         return back()->with('success', 'Verse added to favorites');
     }
 
-    public function destroy($id): \Illuminate\Http\RedirectResponse
+    public function destroy(Request $request, $id): \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
     {
         $fav = FavoriteVerse::where('id', $id)->where('user_id', Auth::id())->first();
         if (!$fav) {
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'Favorite not found'], 404);
+            }
             return back()->with('error', 'Favorite not found');
         }
 
         $fav->delete();
+
+        if ($request->expectsJson()) {
+            return response()->json(['success' => true]);
+        }
 
         return back()->with('success', 'Favorite removed');
     }

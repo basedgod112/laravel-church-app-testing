@@ -9,7 +9,7 @@ use App\Http\Middleware\EnsureAdmin;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\BibleController;
-use \App\Http\Controllers\FavoriteVerseController;
+use App\Http\Controllers\FavoriteVerseController;
 
 require __DIR__.'/auth.php';
 
@@ -21,7 +21,7 @@ Route::get('/', function () {
 Route::view('/home', 'home')->name('home');
 
 // Bible
-Route::view('/bible', 'bible')->name('bible');
+Route::view('/bible', 'bible.index')->name('bible');
 
 // Bible API endpoints (serve JSON from storage/app/bible/{TRANSLATION})
 Route::get('/bible/api/{translation}/index', [BibleController::class, 'index'])->name('bible.api.index');

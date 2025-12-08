@@ -7,8 +7,8 @@
         <div>
             <a href="{{ route('faq.categories.create') }}">Create category</a>
             <a href="{{ route('faq.categories.index') }}">Manage categories</a>
-            <a href="{{ route('faq.faqs.create') }}">Create FAQ</a>
-            <a href="{{ route('faq.faqs.index') }}">Manage FAQs</a>
+            <a href="{{ route('faq.create') }}">Create FAQ</a>
+            <a href="{{ route('faq.manage') }}">Manage FAQs</a>
         </div>
     @endcan
 

@@ -8,7 +8,8 @@
         <div>
             <a href="{{ route('resources.categories.create') }}">Create category</a>
             <a href="{{ route('resources.categories.index') }}">Manage categories</a>
-            <a href="{{ route('resources.create') }}">Add Resource</a>
+            <a href="{{ route('resources.create') }}">Create Resource</a>
+            <a href="{{ route('resources.manage') }}">Manage Resources</a>
         </div>
     @endcan
 

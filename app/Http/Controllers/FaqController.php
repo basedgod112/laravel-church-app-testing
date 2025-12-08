@@ -142,7 +142,7 @@ class FaqController extends Controller
             'answer' => 'required|string',
         ]);
         Faq::create($data);
-        return Redirect::route('faq.faqs.index')->with('success', 'FAQ created');
+        return Redirect::route('faq.manage')->with('success', 'FAQ created');
     }
 
     public function editFaq($id): Factory|View
@@ -161,13 +161,13 @@ class FaqController extends Controller
             'answer' => 'required|string',
         ]);
         $faq->update($data);
-        return Redirect::route('faq.faqs.index')->with('success', 'FAQ updated');
+        return Redirect::route('faq.manage')->with('success', 'FAQ updated');
     }
 
     public function destroyFaq($id): RedirectResponse
     {
         $faq = Faq::findOrFail($id);
         $faq->delete();
-        return Redirect::route('faq.faqs.index')->with('success', 'FAQ deleted');
+        return Redirect::route('faq.manage')->with('success', 'FAQ deleted');
     }
 }

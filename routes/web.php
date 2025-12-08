@@ -96,6 +96,7 @@ Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function
 
     // Resources
     Route::prefix('resources')->group(function () {
+        Route::get('/manage', [ResourcesController::class, 'manage'])->name('resources.manage');
         Route::get('/create', [ResourcesController::class, 'create'])->name('resources.create');
         Route::post('/', [ResourcesController::class, 'store'])->name('resources.store');
         Route::get('/{id}/edit', [ResourcesController::class, 'edit'])->name('resources.edit');
@@ -113,12 +114,12 @@ Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function
 
     // FAQ
     Route::prefix('faq')->group(function () {
-        Route::get('/faqs', [FaqController::class, 'faqs'])->name('faq.faqs.index');
-        Route::get('/faqs/create', [FaqController::class, 'createFaq'])->name('faq.faqs.create');
-        Route::post('/faqs', [FaqController::class, 'storeFaq'])->name('faq.faqs.store');
-        Route::get('/faqs/{id}/edit', [FaqController::class, 'editFaq'])->name('faq.faqs.edit');
-        Route::put('/faqs/{id}', [FaqController::class, 'updateFaq'])->name('faq.faqs.update');
-        Route::delete('/faqs/{id}', [FaqController::class, 'destroyFaq'])->name('faq.faqs.destroy');
+        Route::get('/faqs', [FaqController::class, 'faqs'])->name('faq.manage');
+        Route::get('/faqs/create', [FaqController::class, 'createFaq'])->name('faq.create');
+        Route::post('/faqs', [FaqController::class, 'storeFaq'])->name('faq.store');
+        Route::get('/faqs/{id}/edit', [FaqController::class, 'editFaq'])->name('faq.edit');
+        Route::put('/faqs/{id}', [FaqController::class, 'updateFaq'])->name('faq.update');
+        Route::delete('/faqs/{id}', [FaqController::class, 'destroyFaq'])->name('faq.destroy');
 
         // categories
         Route::get('/categories', [FaqController::class, 'categories'])->name('faq.categories.index');

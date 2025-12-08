@@ -153,4 +153,13 @@ class ResourcesController extends Controller
         $category->delete();
         return Redirect::route('resources.categories.index')->with('success', 'Category deleted');
     }
+
+    /**
+     * Admin: show paginated manage view for resources
+     */
+    public function manage(): Factory|View
+    {
+        $resources = Resource::orderBy('published_at', 'desc')->paginate(10);
+        return view('admin.resources.resources', compact('resources'));
+    }
 }

@@ -21,7 +21,7 @@ Route::get('/', function () {
 Route::view('/home', 'home')->name('home');
 
 // Bible
-Route::view('/bible', 'bible.index')->name('bible');
+Route::view('/bible', 'bible.index')->name('bible.index');
 
 // Bible API endpoints (serve JSON from storage/app/bible/{TRANSLATION})
 Route::get('/bible/api/{translation}/index', [BibleController::class, 'index'])->name('bible.api.index');

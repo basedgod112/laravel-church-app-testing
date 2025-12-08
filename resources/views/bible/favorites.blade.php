@@ -32,13 +32,13 @@
                 // set last visited and requested verse then go to bible
                 localStorage.setItem('bible_last', JSON.stringify({ book: book, chapter: Number(chapter) }));
                 localStorage.setItem('bible_scroll', String(verse));
-                window.location.href = '{{ route('bible') }}';
+                window.location.href = '{{ route('bible.index') }}';
             });
 
             item.querySelector('.gotoButton').addEventListener('click', () => {
                 localStorage.setItem('bible_last', JSON.stringify({ book: book, chapter: Number(chapter) }));
                 localStorage.setItem('bible_scroll', String(verse));
-                window.location.href = '{{ route('bible') }}';
+                window.location.href = '{{ route('bible.index') }}';
             });
 
             item.querySelector('.removeButton').addEventListener('click', async (e) => {

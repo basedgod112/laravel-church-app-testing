@@ -3,8 +3,8 @@
 @section('title', 'Manage FAQs')
 
 @section('content')
-    <h1>FAQs</h1>
     <a href="{{ route('faq.faqs.create') }}">Create new FAQ</a>
+
     <ul>
         @foreach($faqs as $faq)
             <li>
@@ -19,4 +19,8 @@
             </li>
         @endforeach
     </ul>
+
+    @if(method_exists($faqs, 'links'))
+        {{ $faqs->links() }}
+    @endif
 @endsection

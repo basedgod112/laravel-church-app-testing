@@ -11,9 +11,52 @@ use App\Models\FaqCategory;
 class FaqController extends Controller
 {
     // Public listing grouped by category
-    public function index(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+    public function index(Request $request): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        $categories = FaqCategory::with('faqs')->orderBy('name')->get();
+        $q = $request->input('q');
+
+        if (!$q) {
+            $categories = FaqCategory::with(['faqs' => function($q) {
+                $q->orderBy('id');
+            }])->orderBy('name')->get();
+
+            return view('faq.index', compact('categories'));
+        }
+
+        // When searching:
+        // 1) categories where the category name matches -> include all faqs
+        // 2) categories that have faqs matching question/answer -> include only the matching faqs
+
+        $qStr = "%{$q}%";
+
+        // Categories where category name matches
+        $categoriesByName = FaqCategory::where('name', 'like', $qStr)
+            ->with(['faqs' => function($q) { $q->orderBy('id'); }])
+            ->orderBy('name')
+            ->get();
+
+        // Categories that have matching faqs (question or answer)
+        $categoriesWithMatchingFaqs = FaqCategory::whereHas('faqs', function($faqQ) use ($qStr) {
+            $faqQ->where('question', 'like', $qStr)
+                  ->orWhere('answer', 'like', $qStr);
+        })->with(['faqs' => function($faqQ) use ($qStr) {
+            $faqQ->where('question', 'like', $qStr)
+                  ->orWhere('answer', 'like', $qStr)
+                  ->orderBy('id');
+        }])->orderBy('name')->get();
+
+        // Merge categories, prefer the full category when name matched
+        $merged = $categoriesByName->keyBy('id');
+        foreach ($categoriesWithMatchingFaqs as $cat) {
+            if ($merged->has($cat->id)) {
+                // already present (category name matched) - leave as is (full faqs)
+                continue;
+            }
+            $merged->put($cat->id, $cat);
+        }
+
+        $categories = $merged->values();
+
         return view('faq.index', compact('categories'));
     }
 
@@ -64,9 +107,22 @@ class FaqController extends Controller
     }
 
     // Admin: faq CRUD
-    public function faqs(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+    public function faqs(Request $request): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
     {
-        $faqs = Faq::with('category')->orderBy('faq_category_id')->get();
+        $q = $request->input('q');
+        $faqs = Faq::with('category')
+            ->when($q, function($query, $q) {
+                $query->where(function($sub) use ($q) {
+                    $sub->where('question', 'like', "%{$q}%")
+                        ->orWhere('answer', 'like', "%{$q}%")
+                        ->orWhereHas('category', function($cat) use ($q) {
+                            $cat->where('name', 'like', "%{$q}%");
+                        });
+                });
+            })
+            ->orderBy('faq_category_id')
+            ->paginate(15);
+
         return view('faq.admin.faqs', compact('faqs'));
     }
 

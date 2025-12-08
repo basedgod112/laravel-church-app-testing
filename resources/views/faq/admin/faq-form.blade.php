@@ -3,7 +3,6 @@
 @section('title', $faq->exists ? 'Edit FAQ' : 'Create FAQ')
 
 @section('content')
-    <h1>{{ $faq->exists ? 'Edit' : 'Create' }} FAQ</h1>
     <form method="POST" action="{{ $faq->exists ? route('faq.faqs.update', $faq->id) : route('faq.faqs.store') }}">
         @csrf
         @if($faq->exists)

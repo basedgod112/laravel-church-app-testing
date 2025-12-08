@@ -3,7 +3,6 @@
 @section('title', 'Manage FAQ Categories')
 
 @section('content')
-    <h1>FAQ Categories</h1>
     <a href="{{ route('faq.categories.create') }}">Create new category</a>
     <ul>
         @foreach($categories as $category)

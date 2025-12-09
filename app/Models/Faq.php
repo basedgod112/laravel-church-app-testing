@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @method static findOrFail($id)
  * @method static create(array $data)
+ * @method static firstOrCreate(string[] $array, array $array1)
  */
 class Faq extends Model
 {

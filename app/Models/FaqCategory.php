@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static Builder|static whereHas(string $relation, Closure $callback)
  * @method static Builder|static where(string $column, $operator = null, $value = null, string $boolean = 'and')
  * @method static pluck(string $string)
+ * @method static firstWhere(string $string, string $categoryName)
  */
 class FaqCategory extends Model
 {

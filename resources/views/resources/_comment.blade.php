@@ -15,7 +15,6 @@
     </div>
 
     <div style="margin-top:6px;">
-        {{ $comment->body }}
+        {!! nl2br(e($comment->body)) !!}
     </div>
 </div>
-

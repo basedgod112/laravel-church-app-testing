@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use App\Http\Requests\ContactFormRequest;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Mail\ContactFormMail;
@@ -19,13 +19,9 @@ class ContactController extends Controller
         return view('contact');
     }
 
-    public function send(Request $request): RedirectResponse
+    public function send(ContactFormRequest $request): RedirectResponse
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'message' => 'required|string',
-        ]);
+        $data = $request->validated();
 
         // persist message
         ContactMessage::create([
@@ -39,7 +35,6 @@ class ContactController extends Controller
         try {
             Mail::to($adminEmail)->send(new ContactFormMail($data));
 
-            // Some drivers populate failures; log if any
             if (method_exists(Mail::class, 'failures')) {
                 $failures = Mail::failures();
                 if (!empty($failures)) {

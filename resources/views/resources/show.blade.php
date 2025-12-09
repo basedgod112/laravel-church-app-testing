@@ -47,11 +47,11 @@
             @endif
 
             @auth
-                <form method="POST" action="{{ route('resources.comments.store', ['resource' => $resource->id]) }}" style="margin-top:16px;">
+                <form id="commentForm" method="POST" action="{{ route('resources.comments.store', ['resource' => $resource->id]) }}" style="margin-top:16px;">
                     @csrf
                     <div>
                         <label for="body">Leave a comment</label><br>
-                        <textarea name="body" id="body" rows="4" style="width:100%;">{{ old('body') }}</textarea>
+                        <textarea name="body" id="body" rows="4" style="width:100%;" required maxlength="1000">{{ old('body') }}</textarea>
                         @error('body')
                             <div style="color:red;">{{ $message }}</div>
                         @enderror
@@ -60,6 +60,42 @@
                         <button type="submit">Post comment</button>
                     </div>
                 </form>
+
+                <script>
+                    // Basic client-side validation and trimming to complement server-side rules.
+                    (function () {
+                        const form = document.getElementById('commentForm');
+                        if (!form) return;
+                        form.addEventListener('submit', function (e) {
+                            const textarea = document.getElementById('body');
+                            if (textarea) textarea.value = textarea.value.trim();
+
+                            const val = textarea ? textarea.value : '';
+                            let ok = true;
+                            // required
+                            if (!val) { ok = false; showError(textarea, 'Please enter a comment'); }
+                            // length
+                            else if (val.length > 1000) { ok = false; showError(textarea, 'Comment is too long'); }
+
+                            if (!ok) {
+                                e.preventDefault();
+                            }
+
+                            function showError(el, message) {
+                                clearError(el);
+                                const d = document.createElement('div');
+                                d.className = 'client-error text-danger';
+                                d.textContent = message;
+                                el.parentNode.insertBefore(d, el.nextSibling);
+                            }
+
+                            function clearError(el) {
+                                const next = el.nextElementSibling;
+                                if (next && next.classList.contains('client-error')) next.remove();
+                            }
+                        });
+                    })();
+                </script>
             @else
                 <p><a href="{{ route('login') }}">Log in</a> to leave a comment.</p>
             @endauth

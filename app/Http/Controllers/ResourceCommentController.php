@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCommentRequest;
 use App\Models\Comment;
 use App\Models\Resource;
 use Illuminate\Http\RedirectResponse;
@@ -9,11 +10,9 @@ use Illuminate\Http\Request;
 
 class ResourceCommentController extends Controller
 {
-    public function store(Request $request, Resource $resource): RedirectResponse
+    public function store(StoreCommentRequest $request, Resource $resource): RedirectResponse
     {
-        $data = $request->validate([
-            'body' => 'required|string|max:1000',
-        ]);
+        $data = $request->validated();
 
         $resource->comments()->create([
             'body' => $data['body'],

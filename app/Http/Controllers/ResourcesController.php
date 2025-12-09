@@ -104,7 +104,7 @@ class ResourcesController extends Controller
             $post->image = 'images/resources/' . basename($imagePath);
         } else {
             // use the new default resource image added to public/images
-            $post->image = 'default-resources-image.jpg';
+            $post->image = 'bible.jpg';
         }
 
         $post->save();
@@ -130,7 +130,7 @@ class ResourcesController extends Controller
 
         if ($request->hasFile('image')) {
             // delete old image if present and not one of the shared defaults
-            if (!empty($post->image) && $post->image !== 'default-resources-image.jpg' && Storage::disk('public')->exists($post->image)) {
+            if (!empty($post->image) && $post->image !== 'bible.jpg' && Storage::disk('public')->exists($post->image)) {
                 Storage::disk('public')->delete($post->image);
             }
 
@@ -147,7 +147,7 @@ class ResourcesController extends Controller
         $post = Resource::findOrFail($id);
 
         // delete image from storage if it exists and isn't a shared default in public/images
-        if (!empty($post->image) && $post->image !== 'default-resources-image.jpg' && Storage::disk('public')->exists($post->image)) {
+        if (!empty($post->image) && $post->image !== 'bible.jpg' && Storage::disk('public')->exists($post->image)) {
             Storage::disk('public')->delete($post->image);
         }
 

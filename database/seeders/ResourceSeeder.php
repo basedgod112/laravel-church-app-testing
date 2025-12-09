@@ -69,7 +69,7 @@ class ResourceSeeder extends Seeder
                 'title' => '2-Minute Devotionals for Busy Days',
                 'content' => "In this brief yet impactful devotional, Joel Caldwell encourages readers to pause amidst their hectic schedules and reflect on God's presence in everyday moments. Through concise scripture readings and thoughtful reflections, this article offers practical ways to integrate faith into daily life, reminding believers that even the busiest days can be opportunities for spiritual growth and connection with God.",
                 'author' => 'Joel Caldwell',
-                'image' => 'default-resources-image.jpg',
+                'image' => 'images/resources/bible.jpg',
                 'link' => 'https://www.drjoelcaldwell.com/new-blog/2017/8/29/do-you-really-trust-god',
                 'published_at' => now()->subDays(2),
             ],

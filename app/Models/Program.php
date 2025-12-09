@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static create(array $data)
  * @method static findOrFail($id)
  * @method static orderByRaw(string $string)
+ * @method static whereIn(string $string, array $array)
  */
 class Program extends Model
 {

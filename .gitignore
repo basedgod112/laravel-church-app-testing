@@ -15,8 +15,6 @@
 /node_modules
 /public/build
 /public/hot
-/public/storage
-/public/images/default-news-image.jpg
 /storage/*.key
 /storage/pail
 /storage/app/bible/web.json

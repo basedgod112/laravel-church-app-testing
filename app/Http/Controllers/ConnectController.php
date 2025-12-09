@@ -117,7 +117,7 @@ class ConnectController extends Controller
                 }
             }
 
-            return view('connect.index', compact('friends', 'received', 'receivedMap', 'others', 'statusMap', 'idMap', 'q'));
+            return view('connect', compact('friends', 'received', 'receivedMap', 'others', 'statusMap', 'idMap', 'q'));
         }
 
         // Not authenticated: show public paginated users with optional search
@@ -129,7 +129,7 @@ class ConnectController extends Controller
         }
         $users = $query->paginate($perPage)->withQueryString();
 
-        return view('connect.index', ['users' => $users, 'q' => $q]);
+        return view('connect', ['users' => $users, 'q' => $q]);
     }
 
     public function sendRequest($receiverId): RedirectResponse

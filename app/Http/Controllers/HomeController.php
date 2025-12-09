@@ -48,22 +48,27 @@ class HomeController extends Controller
         $allPrograms = Program::query()->where('published', true)->get();
 
         $upcomingPrograms = $allPrograms->map(function ($p) use ($todayIndex) {
+            // Map weekday names to numeric indexes (0 = Sunday ... 6 = Saturday)
             $weekdayOrder = ['Sunday' => 0, 'Monday' => 1, 'Tuesday' => 2, 'Wednesday' => 3, 'Thursday' => 4, 'Friday' => 5, 'Saturday' => 6];
             $dayName = $p->day_of_week;
+            // If program has an unexpected day value, skip it by returning null
             if (! isset($weekdayOrder[$dayName])) {
-                return null; // skip if unexpected value
+                return null;
             }
+            // Compute the offset in days from today (0 = today, 1 = tomorrow, ..., 6 = next week)
             $dayIndex = $weekdayOrder[$dayName];
-            $p->day_offset = ($dayIndex - $todayIndex + 7) % 7; // 0 = today, 1 = tomorrow, ...
+            $p->day_offset = ($dayIndex - $todayIndex + 7) % 7;
             return $p;
-        })->filter()
+        })->filter() // remove any null entries (invalid day_of_week)
         ->sort(function ($a, $b) {
+            // Primary sort: by day offset (so earlier upcoming days first)
             if ($a->day_offset === $b->day_offset) {
+                // Secondary sort: by start_time for events on the same day
                 return strcmp($a->start_time ?? '', $b->start_time ?? '');
             }
             return $a->day_offset <=> $b->day_offset;
-        })->values()
-        ->take(3);
+        })->values() // reindex collection after sorting
+        ->take(3); // keep only the next 3 upcoming events
 
         // Expose as $programs for the view (upcoming next 3 events)
         $programs = $upcomingPrograms;

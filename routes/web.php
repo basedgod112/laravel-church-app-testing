@@ -58,6 +58,7 @@ Route::get('/news', [NewsController::class, 'index'])->name('news.index');
 
 // Resources
 Route::get('/resources', [ResourcesController::class, 'index'])->name('resources.index');
+Route::get('/resources/{id}', [ResourcesController::class, 'show'])->name('resources.show');
 
 // FAQ
 Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');

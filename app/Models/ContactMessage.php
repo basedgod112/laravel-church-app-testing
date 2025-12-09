@@ -10,6 +10,7 @@ use Illuminate\Support\Carbon;
 /**
  * @method static orderBy(string $string, string $string1)
  * @method static create(array $array)
+ * @method static firstOrCreate(string[] $array, string[] $array1)
  * @property mixed $email
  * @property mixed $name
  * @property mixed $message

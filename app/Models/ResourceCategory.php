@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static findOrFail($id)
  * @method static orderBy(string $string)
  * @method static create(array $data)
+ * @method static firstOrCreate(array $array, string[] $array1)
+ * @method static pluck(string $string)
  */
 class ResourceCategory extends Model
 {

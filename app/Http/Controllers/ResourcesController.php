@@ -12,10 +12,45 @@ use App\Models\ResourceCategory;
 
 class ResourcesController extends Controller
 {
-    public function index(): Factory|View
+    public function index(Request $request): Factory|View
     {
-        $resources = Resource::orderBy('published_at', 'desc')->get();
-        return view('resources', ['resources' => $resources]);
+        // base query
+        $query = Resource::query();
+
+        // search in title or content
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%$search%")
+                  ->orWhere('content', 'like', "%$search%");
+            });
+        }
+
+        // filter by category id
+        if ($request->filled('category')) {
+            $query->where('resource_category_id', $request->input('category'));
+        }
+
+        // filter by author name
+        if ($request->filled('author')) {
+            $query->where('author', $request->input('author'));
+        }
+
+        // always sort newest first
+        $resources = $query->orderBy('published_at', 'desc')->paginate(10)->withQueryString();
+
+        // load categories and authors for filter controls
+        $categories = ResourceCategory::orderBy('name')->get();
+        $authors = Resource::whereNotNull('author')->select('author')->distinct()->orderBy('author')->pluck('author');
+
+        return view('resources.index', compact('resources', 'categories', 'authors'));
+    }
+
+    // Show a single resource (full view)
+    public function show($id): Factory|View
+    {
+        $resource = Resource::findOrFail($id);
+        return view('resources.show', compact('resource'));
     }
 
     public function create(): Factory|View
@@ -154,9 +189,7 @@ class ResourcesController extends Controller
         return Redirect::route('resources.categories.index')->with('success', 'Category deleted');
     }
 
-    /**
-     * Admin: show paginated manage view for resources
-     */
+    // Show paginated manage view for resources
     public function manage(): Factory|View
     {
         $resources = Resource::orderBy('published_at', 'desc')->paginate(10);

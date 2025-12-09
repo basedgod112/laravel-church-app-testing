@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -19,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property mixed|string $image
  * @property mixed|null $link
  * @property mixed|null $resource_category_id
+ * @property mixed $id
  */
 class Resource extends Model
 {
@@ -37,5 +39,10 @@ class Resource extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(ResourceCategory::class, 'resource_category_id');
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(Comment::class)->orderBy('created_at');
     }
 }

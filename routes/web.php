@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\NewsController;
+use App\Http\Controllers\ResourceCommentController;
 use App\Http\Controllers\ResourcesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FaqController;
@@ -31,27 +32,11 @@ Route::view('/bible', 'bible.index')->name('bible.index');
 Route::get('/bible/api/{translation}/index', [BibleController::class, 'index'])->name('bible.api.index');
 Route::get('/bible/api/{translation}/{book}/{chapter}', [BibleController::class, 'chapter'])->name('bible.api.chapter');
 
-// Favorites (user)
-Route::middleware('auth')->group(function () {
-    Route::get('/favorites', [FavoriteVerseController::class, 'index'])->name('favorites.index');
-    Route::post('/favorites', [FavoriteVerseController::class, 'store'])->name('favorites.store');
-    Route::delete('/favorites/{id}', [FavoriteVerseController::class, 'destroy'])->name('favorites.destroy');
-});
-
 // Program
 Route::get('/program', [ProgramController::class, 'index'])->name('program.index');
 
 // Connect
 Route::get('/connect', [ConnectController::class, 'index'])->name('connect.index');
-
-// Connect - actions (users only)
-Route::middleware('auth')->prefix('connect')->group(function () {
-    Route::post('/{receiver}/request', [ConnectController::class, 'sendRequest'])->name('connect.request.send');
-    Route::post('/requests/{id}/accept', [ConnectController::class, 'accept'])->name('connect.request.accept');
-    Route::post('/requests/{id}/decline', [ConnectController::class, 'decline'])->name('connect.request.decline');
-    Route::delete('/requests/{id}', [ConnectController::class, 'cancel'])->name('connect.request.cancel');
-    Route::post('/{other}/remove', [ConnectController::class, 'removeFriend'])->name('connect.friend.remove');
-});
 
 // News
 Route::get('/news', [NewsController::class, 'index'])->name('news.index');
@@ -67,9 +52,34 @@ Route::get('/faq', [FaqController::class, 'index'])->name('faq.index');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
+// Authenticated users
+Route::middleware('auth')->group(function () {
+    // Favorites
+    Route::get('/favorites', [FavoriteVerseController::class, 'index'])->name('favorites.index');
+    Route::post('/favorites', [FavoriteVerseController::class, 'store'])->name('favorites.store');
+    Route::delete('/favorites/{id}', [FavoriteVerseController::class, 'destroy'])->name('favorites.destroy');
+
+    // Connect - actions
+    Route::prefix('connect')->group(function () {
+        Route::post('/{receiver}/request', [ConnectController::class, 'sendRequest'])->name('connect.request.send');
+        Route::post('/requests/{id}/accept', [ConnectController::class, 'accept'])->name('connect.request.accept');
+        Route::post('/requests/{id}/decline', [ConnectController::class, 'decline'])->name('connect.request.decline');
+        Route::delete('/requests/{id}', [ConnectController::class, 'cancel'])->name('connect.request.cancel');
+        Route::post('/{other}/remove', [ConnectController::class, 'removeFriend'])->name('connect.friend.remove');
+    });
+
+    // Comments on resources
+    Route::post('/resources/{resource}/comments', [ResourceCommentController::class, 'store'])->name('resources.comments.store');
+    Route::delete('/resources/{resource}/comments/{comment}', [ResourceCommentController::class, 'destroy'])->name('resources.comments.destroy');
+
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
 // Admin
 Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function () {
-
     // Dashboard
     Route::get('/dashboard', function () {
         $messages = ContactMessage::orderBy('created_at', 'desc')->paginate(5);
@@ -149,9 +159,3 @@ Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function
     });
 });
 
-// Profile
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});

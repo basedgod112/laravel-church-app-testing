@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Resource;
+use App\Models\ResourceCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -24,6 +25,7 @@ class ResourceFactory extends Factory
             'content' => $this->faker->paragraphs(3, true),
             'published_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
             'author' => $this->faker->name(),
+            'resource_category_id' => ResourceCategory::query()->inRandomOrder()->value('id'),
         ];
     }
 }

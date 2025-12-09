@@ -8,6 +8,7 @@ use App\Models\ResourceCategory;
 use App\Models\User;
 use App\Models\FaqCategory;
 use App\Models\Faq;
+use App\Models\Comment;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -22,18 +23,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Default user -> delete
-        User::firstOrCreate(
-            ['email' => 'lucas@ehb.be'], //search criteria -> check if user exists
-            [
-                'name' => 'Lucas',
-                'email_verified_at' => now(),
-                'password' => Hash::make('Lucas!321'),
-            ]
-        );
-
-        // Default admin
-        User::firstOrCreate(
+        // Default admin (store in $admin for reuse)
+        $admin = User::firstOrCreate(
             ['email' => 'admin@ehb.be'],
             [
                 'is_admin' => true,
@@ -43,8 +34,30 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
+        // Default normal users
+        $alice = User::firstOrCreate(
+            ['email' => 'alice.johnson@example.com'],
+            [
+                'name' => 'Alice Johnson',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password'),
+            ]
+        );
+
+        $bob = User::firstOrCreate(
+            ['email' => 'bob.smith@example.com'],
+            [
+                'name' => 'Bob Smith',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password'),
+            ]
+        );
+
         // News
         News::factory()->count(4)->create();
+
+        // Programs
+        $this->call(ProgramSeeder::class);
 
         // Resources
         $resourceCategories = [
@@ -77,6 +90,37 @@ class DatabaseSeeder extends Seeder
             });
         }
 
+        // Attach comments to 3 recent resources
+        $sampleResources = Resource::orderBy('created_at', 'desc')->take(3)->get();
+        if ($sampleResources->isNotEmpty()) {
+            $r0 = $sampleResources[0];
+
+            Comment::firstOrCreate([
+                'user_id' => $alice->id,
+                'resource_id' => $r0->id,
+                'body' => 'This was a really helpful overview — clarified several questions I had about the doctrine. Thanks for sharing!'
+            ]);
+
+            if (isset($sampleResources[1])) {
+                $r1 = $sampleResources[1];
+                Comment::firstOrCreate([
+                    'user_id' => $bob->id,
+                    'resource_id' => $r1->id,
+                    'body' => 'I appreciated the historical context here. Would love references to primary sources if anyone has recommendations.'
+                ]);
+            }
+
+            if (isset($sampleResources[2])) {
+                $r2 = $sampleResources[2];
+                // Use the $admin created above
+                Comment::firstOrCreate([
+                    'user_id' => $admin->id,
+                    'resource_id' => $r2->id,
+                    'body' => 'We plan to add a follow-up guide to this resource next month — stay tuned.'
+                ]);
+            }
+        }
+
         // FAQ
         $faqCategories = [
             'Systematic Theology' => 'Questions about core doctrines and theological systems.',
@@ -102,9 +146,6 @@ class DatabaseSeeder extends Seeder
                 $faq->save();
             });
         }
-
-        // Programs
-        $this->call(ProgramSeeder::class);
 
         // Contact messages
         ContactMessage::firstOrCreate(

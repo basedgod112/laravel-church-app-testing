@@ -14,16 +14,19 @@ use App\Http\Controllers\FavoriteVerseController;
 use App\Http\Controllers\ConnectController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\ContactMessageController;
-use App\Models\ContactMessage;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\HomeController;
 
 require __DIR__.'/auth.php';
+
+// Public views
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 // Home
-Route::view('/home', 'home')->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 // Bible
 Route::view('/bible', 'bible.index')->name('bible.index');
@@ -81,10 +84,7 @@ Route::middleware('auth')->group(function () {
 // Admin
 Route::prefix('admin')->middleware(['auth', EnsureAdmin::class])->group(function () {
     // Dashboard
-    Route::get('/dashboard', function () {
-        $messages = ContactMessage::orderBy('created_at', 'desc')->paginate(5);
-        return view('admin.dashboard', compact('messages'));
-    })->name('admin.dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     // Program
     Route::prefix('program')->group(function () {

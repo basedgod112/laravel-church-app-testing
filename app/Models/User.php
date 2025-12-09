@@ -20,6 +20,7 @@ use App\Models\FriendRequest;
  * @method static create(array $array)
  * @method static where(string $string, true $true)
  * @method static firstWhere(string $string, string $string1)
+ * @method static orderByDesc(string $string)
  * @property mixed $id
  * @property mixed $is_admin
  */

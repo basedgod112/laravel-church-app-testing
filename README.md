@@ -139,3 +139,24 @@ This project was developed with assistance from AI tools as follows:
 -   **Antigravity (Gemini 3 Pro)**: Used at the end of the project for styling and CSS to ensure a polished user interface.
 
 Both AI tools provided significant development efficiency improvements while maintaining code quality and project integrity through comprehensive code review and validation processes.
+
+## Optional Bible installation
+
+The repository includes the full Bible as JSON files under `storage/app/bible/WEB` for the app to use. For convenience I provide a compressed archive `storage/app/bible/WEB.zip` that contains all 1000+ chapter files.
+If you desire to have the Bible and related functionalities, you can unzip the file into the correct location.
+
+PowerShell (Windows):
+
+```powershell
+# Ensure the target directory exists, then extract WEB.zip into it
+mkdir -Force "storage\app\bible\WEB"
+Expand-Archive -Path "storage\app\bible\WEB.zip" -DestinationPath "storage\app\bible\WEB" -Force
+```
+
+Linux / macOS:
+
+```bash
+# Ensure the target directory exists, then extract WEB.zip into it
+mkdir -p storage/app/bible/WEB
+unzip -o storage/app/bible/WEB.zip -d storage/app/bible/WEB
+```

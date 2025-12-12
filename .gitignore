@@ -18,6 +18,7 @@
 /storage/*.key
 /storage/pail
 /storage/app/bible/web.json
+/storage/app/bible/WEB/*
 /vendor
 Homestead.json
 Homestead.yaml

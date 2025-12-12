@@ -76,7 +76,23 @@ Follow these steps to get the project up and running:
     php artisan db:seed
     ```
 
-9. **Build front-end assets**
+9. **Start the development server**
+
+-   Using Herd (recommended on Windows):
+
+    ```bash
+    herd start
+    ```
+
+    If `herd` is not available on your `PATH`, you can run Artisan with Herd's bundled PHP as a fallback:
+
+    ```bash
+    "C:\\Users\\YOUR_USER\\AppData\\Local\\Programs\\Herd\\php\\php.exe" artisan serve
+    ```
+
+    The application will be available at `http://localhost:8000` (or the address reported by Herd).
+
+10. **Build front-end assets**
 
     ```bash
     npm run dev
@@ -87,14 +103,6 @@ Follow these steps to get the project up and running:
     ```bash
     npm run build
     ```
-
-10. **Start the development server**
-
-    ```bash
-    php artisan serve
-    ```
-
-    The application will be available at `http://localhost:8000`
 
 ## Technology Stack
 

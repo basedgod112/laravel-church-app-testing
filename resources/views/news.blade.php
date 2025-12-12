@@ -34,7 +34,7 @@
                     <p style="font-size: 0.85rem; color: var(--text-muted);">By {{ $post->author }} | {{ $post->published_at ? Carbon::parse($post->published_at)->toFormattedDateString() : $post->published_at }}</p>
                 @endif
 
-                <p style="flex-grow: 1;">{{ Str::limit($post->content, 120) }}</p>
+                <p style="flex-grow: 1; white-space: pre-wrap;">{!! nl2br(e($post->content)) !!}</p>
 
                 @can('admin')
                     <div style="border-top: 1px dashed var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #f8faf8; margin: 1.5rem -1.5rem -1.5rem;padding: 1rem 1.5rem;">

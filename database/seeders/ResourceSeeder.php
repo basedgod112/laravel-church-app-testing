@@ -90,7 +90,7 @@ class ResourceSeeder extends Seeder
                 continue;
             }
 
-            Resource::firstOrCreate(
+            $resource = Resource::firstOrCreate(
                 ['title' => $data['title']],
                 [
                     'content' => $data['content'],
@@ -98,9 +98,21 @@ class ResourceSeeder extends Seeder
                     'image' => $data['image'],
                     'link' => $data['link'],
                     'published_at' => $data['published_at'],
-                    'resource_category_id' => $category->id,
                 ]
             );
+
+            // attach category to resource (many-to-many)
+            if ($resource && $category) {
+                $resource->categories()->syncWithoutDetaching([$category->id]);
+
+                // Special case: also add 'Apologetics' to the 'Doctrine of The Trinity' resource
+                if ($categoryName === 'Systematic Theology' && ($resource->title ?? '') === 'Doctrine of The Trinity') {
+                    $apol = ResourceCategory::firstWhere('name', 'Apologetics');
+                    if ($apol) {
+                        $resource->categories()->syncWithoutDetaching([$apol->id]);
+                    }
+                }
+            }
         }
 
         // Attach comments to 3 recent resources (if users exist)

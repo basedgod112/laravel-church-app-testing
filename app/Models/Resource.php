@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @method static findOrFail($id)
@@ -35,12 +35,11 @@ class Resource extends Model
         'published_at',
         'author',
         'link',
-        'resource_category_id',
     ];
 
-    public function category(): BelongsTo
+    public function categories(): BelongsToMany
     {
-        return $this->belongsTo(ResourceCategory::class, 'resource_category_id');
+        return $this->belongsToMany(ResourceCategory::class, 'category_resource');
     }
 
     public function comments(): HasMany

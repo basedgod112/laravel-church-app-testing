@@ -5,7 +5,7 @@
 @section('content')
     <section class="dashboard-section">
         <div class="admin-header">
-            <h2>Manage Users</h2>
+            <h2>Existing Users</h2>
             <a href="{{ route('admin.users.create') }}" class="btn">
                 + Create New User
             </a>

@@ -27,9 +27,12 @@ class ResourcesController extends Controller
             });
         }
 
-        // filter by category id
+        // filter by category id (many-to-many)
         if ($request->filled('category')) {
-            $query->where('resource_category_id', $request->input('category'));
+            $categoryId = $request->input('category');
+            $query->whereHas('categories', function ($q) use ($categoryId) {
+                $q->where('resource_categories.id', $categoryId);
+            });
         }
 
         // filter by author name
@@ -81,7 +84,8 @@ class ResourcesController extends Controller
             // optional link, must be a valid URL when present
             'link' => 'nullable|url|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'resource_category_id' => 'nullable|exists:resource_categories,id',
+            'categories' => 'nullable|array',
+            'categories.*' => 'exists:resource_categories,id',
         ];
     }
 
@@ -97,8 +101,6 @@ class ResourcesController extends Controller
 
         // store link if provided
         $post->link = $validated['link'] ?? null;
-        $post->resource_category_id = $validated['resource_category_id'] ?? null;
-
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->storeAs('images/resources', uniqid() . '.' . $request->file('image')->getClientOriginalExtension(), 'public');
             $post->image = 'images/resources/' . basename($imagePath);
@@ -108,6 +110,11 @@ class ResourcesController extends Controller
         }
 
         $post->save();
+
+        // sync categories if provided
+        if (! empty($validated['categories'])) {
+            $post->categories()->sync($validated['categories']);
+        }
         return redirect()->route('resources.index')->with('success', 'Resource created successfully.');
     }
 
@@ -124,8 +131,9 @@ class ResourcesController extends Controller
             $post->link = $validated['link'];
         }
 
-        if (array_key_exists('resource_category_id', $validated)) {
-            $post->resource_category_id = $validated['resource_category_id'];
+        // sync categories if provided
+        if (array_key_exists('categories', $validated)) {
+            $post->categories()->sync($validated['categories'] ?? []);
         }
 
         if ($request->hasFile('image')) {

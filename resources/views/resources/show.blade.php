@@ -18,10 +18,14 @@
             
             {{-- Header: Title & Meta --}}
             <header style="text-align: center; margin-bottom: 2.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 2rem;">
-                @if(!empty($resource->resource_category_id) && $resource->category)
-                    <span style="display: inline-block; background: var(--secondary); color: var(--primary-dark); padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1rem;">
-                        {{ $resource->category->name }}
-                    </span>
+                @if($resource->categories && $resource->categories->isNotEmpty())
+                    <div style="margin-bottom: 1rem; display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center; align-items:center;">
+                        @foreach($resource->categories as $cat)
+                            <span style="display: inline-block; background: var(--secondary); color: var(--primary-dark); padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600;">
+                                {{ $cat->name }}
+                            </span>
+                        @endforeach
+                    </div>
                 @endif
                 
                 <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--text-main);">{{ $resource->title }}</h1>

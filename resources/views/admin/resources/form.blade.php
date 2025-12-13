@@ -16,11 +16,13 @@
         <label for="author">Author</label>
         <input type="text" name="author" id="author" value="{{ old('author', $post->author) }}" required>
 
-        <label for="resource_category_id">Category</label>
-        <select name="resource_category_id" id="resource_category_id">
-            <option value="">-- None --</option>
+        <label for="categories">Categories</label>
+        @php
+            $selected = old('categories', $post->exists ? $post->categories->pluck('id')->toArray() : []);
+        @endphp
+        <select name="categories[]" id="categories" multiple style="min-height: 120px;">
             @foreach($categories as $category)
-                <option value="{{ $category->id }}" {{ (int)old('resource_category_id', $post->resource_category_id) === $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                <option value="{{ $category->id }}" {{ in_array($category->id, (array)$selected) ? 'selected' : '' }}>{{ $category->name }}</option>
             @endforeach
         </select>
 

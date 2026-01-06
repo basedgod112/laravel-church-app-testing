@@ -23,7 +23,7 @@ class EnsureAdmin
             return redirect()->route('login');
         }
 
-        if (! ($user->is_admin ?? false)) {
+        if (! ($user->is_admin ?? false) && !in_array($user->role, ['admin', 'moderator', 'priest'])) {
             abort(403);
         }
 

@@ -21,7 +21,32 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@ehb.be'],
             [
                 'is_admin' => true,
+                'role' => 'admin',
                 'name' => 'admin',
+                'email_verified_at' => now(),
+                'password' => Hash::make('Password!321'),
+            ]
+        );
+
+        // Moderator
+        User::firstOrCreate(
+            ['email' => 'moderator@ehb.be'],
+            [
+                'is_admin' => false,
+                'role' => 'moderator',
+                'name' => 'Moderator User',
+                'email_verified_at' => now(),
+                'password' => Hash::make('Password!321'),
+            ]
+        );
+
+        // Priest
+        User::firstOrCreate(
+            ['email' => 'priest@ehb.be'],
+            [
+                'is_admin' => false,
+                'role' => 'priest',
+                'name' => 'Priest User',
                 'email_verified_at' => now(),
                 'password' => Hash::make('Password!321'),
             ]
